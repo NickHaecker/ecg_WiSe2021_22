@@ -70,13 +70,9 @@ function main() {
         varying vec4 vFragColor;
 
         void main() {
-            // gl_FragColor = vFragColor;
-            if( mod(gl_FragCoord.x,10.0) < 5.0  && mod(gl_FragCoord.y,10.0) < 5.0) {  
+            if( mod(gl_FragCoord.x,10.0) > 5.0  || mod(gl_FragCoord.y,10.0) > 5.0) {  
                 gl_FragColor = vFragColor;
-            } else {
-                gl_FragColor = vec4(1.0,1.0,1.0,2.0) 
-                               - vFragColor;
-            }    
+            }
                       
         }    
             
