@@ -1,3 +1,14 @@
+/**
+ * Example Code #03 for ECG course
+ * Render a cube and let it rotate
+ *
+ * @summary WebGL implementation of a rotating cube
+ * @author Uwe Hahne, uwe.hahne (ät) hs-furtwangen.de
+ *
+ * Created at     : 2021-11-03 15:25:45 
+ * Last modified  : 2021-11-04 12:04:55
+ */
+
 var cubeRotation = degToRad(45.0);
 
 main();
@@ -14,9 +25,6 @@ function main() {
         console.log('WebGL is good to go');
     }
 
-    // initialize geometry
-    const buffers = initBuffers(gl);
-
     /*========== Shaders ==========*/
 
     // define shader sources
@@ -31,8 +39,8 @@ function main() {
 
         void main() {
             gl_Position = uProjectionMatrix * uModelViewMatrix * aPosition;
-            vColor = aPosition; // RGB Cube
-            //vColor = aVertexColor; // Face colored cube
+            //vColor = aPosition; // RGB Cube
+            vColor = aVertexColor; // Face colored cube
         }
     `;
 
@@ -63,6 +71,49 @@ function main() {
         modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
         }
     };
+
+    // Initialize the geometry in vertex buffer objects 
+    const buffers = initBuffers(gl);
+
+    // Tell WebGL how to pull out the positions from the position
+    // buffer into the vertexPosition attribute
+    {
+        const numComponents = 3;
+        const type = gl.FLOAT;
+        const normalize = false;
+        const stride = 0;
+        const offset = 0;
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+        gl.vertexAttribPointer(
+            programInfo.attribLocations.vertexPosition,
+            numComponents,
+            type,
+            normalize,
+            stride,
+            offset);
+        gl.enableVertexAttribArray(
+            programInfo.attribLocations.vertexPosition);
+      }
+    
+      // Tell WebGL how to pull out the colors from the color buffer
+      // into the vertexColor attribute.
+      {
+        const numComponents = 4;
+        const type = gl.FLOAT;
+        const normalize = false;
+        const stride = 0;
+        const offset = 0;
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
+        gl.vertexAttribPointer(
+            programInfo.attribLocations.vertexColor,
+            numComponents,
+            type,
+            normalize,
+            stride,
+            offset);
+        gl.enableVertexAttribArray(
+            programInfo.attribLocations.vertexColor);
+      }
 
     var then = 0;
 
@@ -168,7 +219,7 @@ function initBuffers(gl) {
 
     const colorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
   
     // Build the element array buffer; this specifies the indices
     // into the vertex arrays for each face's vertices.
@@ -271,7 +322,7 @@ function drawScene(gl, programInfo, buffers, deltaTime) {
     // and we only want to see objects between 0.1 units
     // and 100 units away from the camera.
   
-    const fieldOfView = 45 * Math.PI / 180;   // in radians
+    const fieldOfView = degToRad(45);   // in radians
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     const zNear = 0.1;
     const zFar = 100.0;
@@ -284,65 +335,29 @@ function drawScene(gl, programInfo, buffers, deltaTime) {
                      aspect,
                      zNear,
                      zFar);
-  
+    
     // Set the drawing position to the "identity" point, which is
     // the center of the scene.
     const modelViewMatrix = mat4.create();
   
     // Now move the drawing position a bit to where we want to
-    // start drawing the square.
-  
+    // start drawing the cube.
     mat4.translate(modelViewMatrix,     // destination matrix
-                   modelViewMatrix,     // matrix to translate
-                   [-0.0, 0.0, -6.0]);  // amount to translate
-    mat4.rotate(modelViewMatrix,  // destination matrix
-                modelViewMatrix,  // matrix to rotate
-                cubeRotation,     // amount to rotate in radians
-                [0, 0, 1]);       // axis to rotate around (Z)
+                    modelViewMatrix,    // matrix to translate
+                    [0.0, 0.0, -6.0]);  // amount to translate
+    
+    // mat4.rotate(modelViewMatrix,  // destination matrix
+    //             modelViewMatrix,  // matrix to rotate
+    //             cubeRotation,     // amount to rotate in radians
+    //             [0, 0, 1]);       // axis to rotate around (Z)
     mat4.rotate(modelViewMatrix,  // destination matrix
                 modelViewMatrix,  // matrix to rotate
                 cubeRotation * .7,// amount to rotate in radians
                 [0, 1, 0]);       // axis to rotate around (X)
-  
-    // Tell WebGL how to pull out the positions from the position
-    // buffer into the vertexPosition attribute
-    {
-      const numComponents = 3;
-      const type = gl.FLOAT;
-      const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
-      gl.vertexAttribPointer(
-          programInfo.attribLocations.vertexPosition,
-          numComponents,
-          type,
-          normalize,
-          stride,
-          offset);
-      gl.enableVertexAttribArray(
-          programInfo.attribLocations.vertexPosition);
-    }
-  
-    // Tell WebGL how to pull out the colors from the color buffer
-    // into the vertexColor attribute.
-    {
-      const numComponents = 4;
-      const type = gl.FLOAT;
-      const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
-      gl.vertexAttribPointer(
-          programInfo.attribLocations.vertexColor,
-          numComponents,
-          type,
-          normalize,
-          stride,
-          offset);
-      gl.enableVertexAttribArray(
-          programInfo.attribLocations.vertexColor);
-    }
+    mat4.translate(modelViewMatrix,     // destination matrix
+                modelViewMatrix,     // matrix to translate
+                [-0.5, -0.5, -0.5]);  // amount to translate
+    
   
     // Tell WebGL which indices to use to index the vertices
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);

@@ -1,9 +1,20 @@
-/*
-Needs THREE.js installed with npm
-Code inspired and copied in parts from:
-AR and VR Using the WebXR API (Book)
-Earth textures from Computer Graphics course at TU Berlin (Prof. M. Alexa)
-*/
+/**
+ * Example Code #04 for ECG course
+ * Render some objects including their coordinate systems with THREE.js
+ * 
+ * Needs THREE.js installed with npm
+ * Code inspired and copied in parts from: "AR and VR Using the WebXR API", Rakesh Baruah (Book)
+ * Earth textures from Computer Graphics course at TU Berlin (Prof. M. Alexa)
+ * 
+ * This code is meant to illustrate how transformations work.
+ *
+ * @summary Render some objects with THREE.js
+ * @author Uwe Hahne, uwe.hahne (ät) hs-furtwangen.de
+ *
+ * Created at     : 2021-11-03 15:34:32 
+ * Last modified  : 2021-11-04 12:05:13
+ */
+
 
 import * as THREE from '../node_modules/three/build/three.module.js';
 
@@ -118,7 +129,7 @@ function main() {
         antialias: true
     })
     
-    // create and set the camera
+    // create and set the perspective camera
     const angleOfView = 55;
     const aspectRatio = canvas.clientWidth / canvas.clientHeight;
     const nearPlane = 0.1;
@@ -130,6 +141,22 @@ function main() {
         farPlane
     );
     camera.position.set(0, 8, 30);
+    // alternative orthographic
+    // const left = -10;
+    // const right = 10;
+    // const top = 10;
+    // const bottom = -20;
+    // const nearPlane = 0.1;
+    // const farPlane = 100;
+    // const camera = new THREE.OrthographicCamera(
+    //     left,
+    //     right,
+    //     top,
+    //     bottom,
+    //     nearPlane,
+    //     farPlane
+    // );
+    // camera.position.set(0, 8, 40);
 
     // create the scene
     const scene = new THREE.Scene();
@@ -229,6 +256,7 @@ function main() {
     sphere.add(axesHelperSphere);
     const axesHelperPlane = new THREE.AxesHelper( 4 );
     plane.add(axesHelperPlane);
+    
     const normalHelperPlane = new VertexNormalsHelper( plane, 2, 0x00ff00, 1 );
     scene.add(normalHelperPlane);
 
