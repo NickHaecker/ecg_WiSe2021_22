@@ -1,15 +1,18 @@
 /**
  * Example Code #03 for ECG course
  * Render a cube and let it rotate
+ * In the lecture an additional time dependent shading has been added.
  *
  * @summary WebGL implementation of a rotating cube
  * @author Uwe Hahne, uwe.hahne (ät) hs-furtwangen.de
  *
  * Created at     : 2021-11-03 15:25:45 
- * Last modified  : 2021-11-04 12:04:55
+ * Last modified  : 2021-11-05 10:18:39
  */
 
 var cubeRotation = degToRad(45.0);
+var then = 0;
+let time = 0.0;
 
 main();
 
@@ -34,13 +37,15 @@ function main() {
 
         uniform mat4 uModelViewMatrix;
         uniform mat4 uProjectionMatrix;
+        uniform float uTime;
 
         varying lowp vec4 vColor;
 
         void main() {
             gl_Position = uProjectionMatrix * uModelViewMatrix * aPosition;
-            //vColor = aPosition; // RGB Cube
-            vColor = aVertexColor; // Face colored cube
+            //vColor = aPosition; // RGB Cube,
+            vColor = abs(sin(uTime * 4.0)) * aVertexColor; // Face colored cube
+            vColor.a = 1.0;
         }
     `;
 
@@ -69,6 +74,7 @@ function main() {
         uniformLocations: {
         projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
         modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+        time: gl.getUniformLocation(shaderProgram, 'uTime'),
         }
     };
 
@@ -115,7 +121,7 @@ function main() {
             programInfo.attribLocations.vertexColor);
       }
 
-    var then = 0;
+    
 
     // Draw the scene repeatedly
     function render(now) {
@@ -281,25 +287,25 @@ function initShaderProgram(gl, vsSource, fsSource) {
 // compiles it.
 //
 function loadShader(gl, type, source) {
-const shader = gl.createShader(type);
+  const shader = gl.createShader(type);
 
-// Send the source to the shader object
+  // Send the source to the shader object
 
-gl.shaderSource(shader, source);
+  gl.shaderSource(shader, source);
 
-// Compile the shader program
+  // Compile the shader program
 
-gl.compileShader(shader);
+  gl.compileShader(shader);
 
-// See if it compiled successfully
+  // See if it compiled successfully
 
-if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
-    gl.deleteShader(shader);
-    return null;
-}
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
+      gl.deleteShader(shader);
+      return null;
+  }
 
-return shader;
+  return shader;
 }
 
 //
@@ -352,7 +358,7 @@ function drawScene(gl, programInfo, buffers, deltaTime) {
     //             [0, 0, 1]);       // axis to rotate around (Z)
     mat4.rotate(modelViewMatrix,  // destination matrix
                 modelViewMatrix,  // matrix to rotate
-                cubeRotation * .7,// amount to rotate in radians
+                cubeRotation * 0.7,// amount to rotate in radians
                 [0, 1, 0]);       // axis to rotate around (X)
     mat4.translate(modelViewMatrix,     // destination matrix
                 modelViewMatrix,     // matrix to translate
@@ -374,6 +380,9 @@ function drawScene(gl, programInfo, buffers, deltaTime) {
         programInfo.uniformLocations.modelViewMatrix,
         false,
         modelViewMatrix);
+    gl.uniform1f(
+      programInfo.uniformLocations.time,
+      time);
   
     {
       const vertexCount = 36;
@@ -384,6 +393,7 @@ function drawScene(gl, programInfo, buffers, deltaTime) {
 
     // Update the rotation for the next draw
     cubeRotation += deltaTime;
+    time += deltaTime;
 }
 
 function degToRad(grad)
