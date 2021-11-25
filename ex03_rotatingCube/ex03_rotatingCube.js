@@ -1,15 +1,22 @@
 /**
  * Example Code #03 for ECG course
  * Render a cube and let it rotate
+ * In the lecture an additional time dependent shading has been added.
  *
  * @summary WebGL implementation of a rotating cube
  * @author Uwe Hahne, uwe.hahne (ät) hs-furtwangen.de
  *
  * Created at     : 2021-11-03 15:25:45 
- * Last modified  : 2021-11-04 12:04:55
+ * Last modified  : 2021-11-05 10:18:39
  */
 
+<<<<<<< HEAD
 let cubeRotation = degToRad(45.0);
+=======
+var cubeRotation = degToRad(45.0);
+var then = 0;
+let time = 0.0;
+>>>>>>> origin/main
 
 main();
 
@@ -34,6 +41,7 @@ function main() {
 
         uniform mat4 uModelViewMatrix;
         uniform mat4 uProjectionMatrix;
+        uniform float uTime;
 
         uniform float deltaTime;
 
@@ -44,8 +52,14 @@ function main() {
         void main() {
           time = deltaTime;
             gl_Position = uProjectionMatrix * uModelViewMatrix * aPosition;
+<<<<<<< HEAD
             // vColor = aPosition; // RGB Cube
             vColor = vec4(sin(time * 1.2 ), cos( time + 0.5 ), 1.0, 1.0);   
+=======
+            //vColor = aPosition; // RGB Cube,
+            vColor = abs(sin(uTime * 4.0)) * aVertexColor; // Face colored cube
+            vColor.a = 1.0;
+>>>>>>> origin/main
         }
     `;
 
@@ -75,9 +89,15 @@ function main() {
             vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
         },
         uniformLocations: {
+<<<<<<< HEAD
             projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
             modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
             deltaTime: gl.getUniformLocation(shaderProgram, "deltaTime")
+=======
+        projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+        modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+        time: gl.getUniformLocation(shaderProgram, 'uTime'),
+>>>>>>> origin/main
         }
     };
 
@@ -124,7 +144,11 @@ function main() {
             programInfo.attribLocations.vertexColor);
     }
 
+<<<<<<< HEAD
     let then = 0;
+=======
+    
+>>>>>>> origin/main
 
     // Draw the scene repeatedly
     function render(now) {
@@ -290,6 +314,7 @@ function initShaderProgram(gl, vsSource, fsSource) {
 // compiles it.
 //
 function loadShader(gl, type, source) {
+<<<<<<< HEAD
     const shader = gl.createShader(type);
 
     // Send the source to the shader object
@@ -309,6 +334,27 @@ function loadShader(gl, type, source) {
     }
 
     return shader;
+=======
+  const shader = gl.createShader(type);
+
+  // Send the source to the shader object
+
+  gl.shaderSource(shader, source);
+
+  // Compile the shader program
+
+  gl.compileShader(shader);
+
+  // See if it compiled successfully
+
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
+      gl.deleteShader(shader);
+      return null;
+  }
+
+  return shader;
+>>>>>>> origin/main
 }
 
 //
@@ -359,6 +405,7 @@ function drawScene(gl, programInfo, buffers, deltaTime, then) {
     //             modelViewMatrix,  // matrix to rotate
     //             cubeRotation,     // amount to rotate in radians
     //             [0, 0, 1]);       // axis to rotate around (Z)
+<<<<<<< HEAD
     mat4.rotate(modelViewMatrix, // destination matrix
         modelViewMatrix, // matrix to rotate
         cubeRotation * .7, // amount to rotate in radians
@@ -368,6 +415,17 @@ function drawScene(gl, programInfo, buffers, deltaTime, then) {
         [-0.5, -0.5, -0.5]); // amount to translate
 
 
+=======
+    mat4.rotate(modelViewMatrix,  // destination matrix
+                modelViewMatrix,  // matrix to rotate
+                cubeRotation * 0.7,// amount to rotate in radians
+                [0, 1, 0]);       // axis to rotate around (X)
+    mat4.translate(modelViewMatrix,     // destination matrix
+                modelViewMatrix,     // matrix to translate
+                [-0.5, -0.5, -0.5]);  // amount to translate
+    
+  
+>>>>>>> origin/main
     // Tell WebGL which indices to use to index the vertices
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
 
@@ -383,6 +441,7 @@ function drawScene(gl, programInfo, buffers, deltaTime, then) {
         programInfo.uniformLocations.modelViewMatrix,
         false,
         modelViewMatrix);
+<<<<<<< HEAD
     console.log(deltaTime, then)
     gl.uniform1f(
         programInfo.uniformLocations.deltaTime,
@@ -390,6 +449,12 @@ function drawScene(gl, programInfo, buffers, deltaTime, then) {
 
 
 
+=======
+    gl.uniform1f(
+      programInfo.uniformLocations.time,
+      time);
+  
+>>>>>>> origin/main
     {
         const vertexCount = 36;
         const type = gl.UNSIGNED_SHORT;
@@ -399,6 +464,7 @@ function drawScene(gl, programInfo, buffers, deltaTime, then) {
 
     // Update the rotation for the next draw
     cubeRotation += deltaTime;
+    time += deltaTime;
 }
 
 function degToRad(grad) {
